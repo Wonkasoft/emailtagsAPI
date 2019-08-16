@@ -31,6 +31,10 @@ if ( empty( $_GET ) ) {
 
 	$token = $config['key'];
 
+}
+
+
+function update( $email ) {
 	$headerdata = array(
 		'User-Agent:' . $useragent,
 		'X-Auth-Token: api-key ' . $token,
@@ -74,5 +78,136 @@ if ( empty( $_GET ) ) {
 	echo $output;
 }
 
+function add( $email ) {
+	$headerdata = array(
+		'User-Agent:' . $useragent,
+		'X-Auth-Token: api-key ' . $token,
+		'Referer: localhost',
+		'Content-Type: multipart/form-data',
+	);
 
+	$post_data = array(
+		'email'  => $email,
+		'status' => $status,
+	);
 
+	$ch = curl_init();
+
+	$url = 'https://api.getresponse.com/v3/contacts?query[email]=info@wonkasoft.com&query[origin]=api';
+
+	curl_setopt( $ch, CURLOPT_URL, $url );
+
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+
+	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+
+	curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+
+	curl_setopt( $ch, CURLOPT_USERAGENT, $useragent );
+
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
+
+	curl_setopt( $ch, CURLOPT_HEADER, true );
+
+	// curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+
+	$output = json_decode( json_encode( curl_exec( $ch ) ), false );
+
+	if ( $output === false ) {
+		echo 'cURL Error: ' . curl_error( $ch );
+	}
+
+	curl_close( $ch );
+
+	echo $output;
+
+}
+
+function delete( $email ) {
+	$headerdata = array(
+		'User-Agent:' . $useragent,
+		'X-Auth-Token: api-key ' . $token,
+		'Referer: localhost',
+		'Content-Type: multipart/form-data',
+	);
+
+	$post_data = array(
+		'email'  => $email,
+		'status' => $status,
+	);
+
+	$ch = curl_init();
+
+	$url = 'https://api.getresponse.com/v3/contacts?query[email]=info@wonkasoft.com&query[origin]=api';
+
+	curl_setopt( $ch, CURLOPT_URL, $url );
+
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+
+	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+
+	curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+
+	curl_setopt( $ch, CURLOPT_USERAGENT, $useragent );
+
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
+
+	curl_setopt( $ch, CURLOPT_HEADER, true );
+
+	// curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+
+	$output = json_decode( json_encode( curl_exec( $ch ) ), false );
+
+	if ( $output === false ) {
+		echo 'cURL Error: ' . curl_error( $ch );
+	}
+
+	curl_close( $ch );
+
+	echo $output;
+
+}
+
+function search( $email ) {
+	$headerdata = array(
+		'User-Agent:' . $useragent,
+		'X-Auth-Token: api-key ' . $token,
+		'Referer: localhost',
+		'Content-Type: multipart/form-data',
+	);
+
+	$post_data = array(
+		'email'  => $email,
+		'status' => $status,
+	);
+
+	$ch = curl_init();
+
+	$url = 'https://api.getresponse.com/v3/contacts?query[email]=info@wonkasoft.com&query[origin]=api';
+
+	curl_setopt( $ch, CURLOPT_URL, $url );
+
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+
+	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+
+	curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+
+	curl_setopt( $ch, CURLOPT_USERAGENT, $useragent );
+
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
+
+	curl_setopt( $ch, CURLOPT_HEADER, true );
+
+	// curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+
+	$output = json_decode( json_encode( curl_exec( $ch ) ), false );
+
+	if ( $output === false ) {
+		echo 'cURL Error: ' . curl_error( $ch );
+	}
+
+	curl_close( $ch );
+
+	echo $output;
+}
