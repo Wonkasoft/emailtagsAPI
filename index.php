@@ -92,16 +92,18 @@ function addtag( $email, $tag, $useragent, $contact_id ) {
 	);
 
 	$post_data = array(
-		'contact' => $contact_id,
-		'tags'    => array(
+		'tags' => array(
 			'tagId' => 'Pa9u',
-			'name'  => 'aproved',
+			'name'  => 'aoorived',
+			'href'  => 'https://api.getresponse.com/v3/tags/Pa9u',
+			'color' => '',
 		),
 	);
 
 	$ch = curl_init();
 
-	$url = 'https://api.getresponse.com/v3/contacts/' . $contact_id . '/tags/';
+	$url = 'https://api.getresponse.com/v3/contacts/' . $contact_id;
+	// $url = 'https://api.getresponse.com/v3/tags/';
 
 	curl_setopt( $ch, CURLOPT_URL, $url );
 
@@ -117,7 +119,9 @@ function addtag( $email, $tag, $useragent, $contact_id ) {
 
 	curl_setopt( $ch, CURLOPT_HEADER, false );
 
-	curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+	// curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+
+	// curl_setopt( $ch, CURLOPT_POST, true );
 
 	$output = curl_exec( $ch );
 
