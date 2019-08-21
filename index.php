@@ -34,7 +34,9 @@ if ( empty( $_GET ) ) {
 	if ( $contact_id == null ) {
 		echo 'error 101';
 	} else {
-		addtag( $email, $tag, $useragent, $contact_id );
+		$tag_id = get_list_of_tags( $useragent, $tag );
+
+		addtag( $email, $tag_id, $useragent, $contact_id );
 	}
 }
 
@@ -83,49 +85,42 @@ function update( $email ) {
 	echo $output;
 }
 
-function addtag( $email, $tag, $useragent, $contact_id ) {
+function addtag( $email, $tag_id, $useragent, $contact_id ) {
+
 	$headerdata = array(
 		'User-Agent:' . $useragent,
 		'X-Auth-Token: api-key ' . $GLOBALS['token'],
 		'Referer: localhost',
-		'Content-Type: multipart/form-data',
+		'Content-Type: application/json',
 	);
 
 	$post_data = array(
 		'tags' => array(
-			'tagId' => 'Pa9u',
-			'name'  => 'aoorived',
-			'href'  => 'https://api.getresponse.com/v3/tags/Pa9u',
-			'color' => '',
+			'tagId' => $tag_id,
 		),
 	);
 
+	$post_data = json_encode( $post_data );
+
 	$ch = curl_init();
 
-	$url = 'https://api.getresponse.com/v3/contacts/' . $contact_id;
-	// $url = 'https://api.getresponse.com/v3/tags/';
+	$url = 'https://api.getresponse.com/v3/contacts/' . $contact_id . '/tags';
 
 	curl_setopt( $ch, CURLOPT_URL, $url );
 
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 
-	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-
-	curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-
-	curl_setopt( $ch, CURLOPT_USERAGENT, $useragent );
-
 	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
 
 	curl_setopt( $ch, CURLOPT_HEADER, false );
 
-	// curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+	curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
 
-	// curl_setopt( $ch, CURLOPT_POST, true );
+	curl_setopt( $ch, CURLOPT_POST, true );
 
 	$output = curl_exec( $ch );
 
-	$output = json_decode( $output, false );
+	// $output = json_decode( $output, false );
 
 	if ( $output === false ) {
 		echo 'cURL Error: ' . curl_error( $ch );
@@ -133,7 +128,11 @@ function addtag( $email, $tag, $useragent, $contact_id ) {
 
 	curl_close( $ch );
 
-	var_dump( $output );
+	echo "<pre>\n";
+	print_r( $output );
+	echo "</pre>\n";
+
+	return $output;
 }
 
 function add( $email ) {
@@ -226,43 +225,44 @@ function delete( $email ) {
 
 }
 
-function search( $email, $useragent ) {
+function get_list_of_tags( $useragent, $tag ) {
+
 	$headerdata = array(
 		'User-Agent:' . $useragent,
 		'X-Auth-Token: api-key ' . $GLOBALS['token'],
 		'Referer: localhost',
-		'Content-Type: multipart/form-data',
+		'Content-Type: application/x-www-form-urlencoded',
 	);
 
 	$post_data = array(
-		'email' => $email,
+		'query' => array(
+			'name' => $tag,
+		),
 	);
+
+	$post_data = json_encode( $post_data );
+
+	$post_data = json_decode( $post_data );
+
+	$post_data = http_build_query( $post_data );
 
 	$ch = curl_init();
 
-	$url = 'https://api.getresponse.com/v3/contacts?query[email]=' . $email . '&query[origin]=api';
+	$url = 'https://api.getresponse.com/v3/tags?' . $post_data;
 
 	curl_setopt( $ch, CURLOPT_URL, $url );
 
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 
-	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-
-	curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-
-	curl_setopt( $ch, CURLOPT_USERAGENT, $useragent );
+	curl_setopt( $ch, CURLOPT_HEADER, false );
 
 	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
-
-	curl_setopt( $ch, CURLOPT_HEADER, false );
 
 	$output = curl_exec( $ch );
 
 	$output = json_decode( $output, false );
 
-	$output = array_shift( $output );
-
-	$output = ( ! empty( $output->contactId ) ) ? $output->contactId : null;
+	$tagid = ( ! empty( $output[0]->tagId ) ) ? $output[0]->tagId : null;
 
 	if ( $output === false ) {
 		echo 'cURL Error: ' . curl_error( $ch );
@@ -270,5 +270,53 @@ function search( $email, $useragent ) {
 
 	curl_close( $ch );
 
-	return $output;
+	return $tagid;
+}
+
+function search( $email, $useragent ) {
+
+	$headerdata = array(
+		'User-Agent:' . $useragent,
+		'X-Auth-Token: api-key ' . $GLOBALS['token'],
+		'Referer: localhost',
+		'Content-Type: application/x-www-form-urlencoded',
+	);
+
+	$post_data = array(
+		'query' => array(
+			'email' => $email,
+		),
+	);
+
+	$post_data = json_encode( $post_data );
+
+	$post_data = json_decode( $post_data );
+
+	$post_data = http_build_query( $post_data );
+
+	$ch = curl_init();
+
+	$url = 'https://api.getresponse.com/v3/contacts?' . $post_data;
+
+	curl_setopt( $ch, CURLOPT_URL, $url );
+
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+
+	curl_setopt( $ch, CURLOPT_HEADER, false );
+
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
+
+	$output = curl_exec( $ch );
+
+	$output = json_decode( $output, false );
+
+	$contact_id = ( ! empty( $output[0]->contactId ) ) ? $output[0]->contactId : null;
+
+	if ( $output === false ) {
+		echo 'cURL Error: ' . curl_error( $ch );
+	}
+
+	curl_close( $ch );
+
+	return $contact_id;
 }
