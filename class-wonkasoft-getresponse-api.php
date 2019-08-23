@@ -16,7 +16,7 @@ defined('ABSPATH') || exit;
 /**
  * 
  */
-class Wonkasoft_GetResponse_API {
+class Wonkasoft_GetResponse_Api {
 
 
 	$config           = parse_ini_file( 'inc/config.ini' );

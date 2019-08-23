@@ -107,7 +107,7 @@ function add( $email ) {
 		'status' => $status,
 	);
 	$ch         = curl_init();
-	$url        = 'https:// api.getresponse.com/v3/contacts?query[email]=info@wonkasoft.com&query[origin]=api';
+	$url        = 'https://api.getresponse.com/v3/contacts?query[email]=info@wonkasoft.com&query[origin]=api';
 	curl_setopt( $ch, CURLOPT_URL, $url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
