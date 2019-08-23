@@ -17,7 +17,7 @@ if ( empty( $_GET ) ) {
 } elseif ( empty( $_GET['nonce'] ) ) {
 	header( 'Location: https://aperabags.com/' );
 	die();
-} elseif ( $_GET['nonce'] != 4646 ) {
+} elseif ( $_GET['nonce'] != 'ubHk73twHt6L' ) {
 	exit( 'Invalid request' );
 } else {
 	$email      = $_GET['email'];
