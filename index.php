@@ -21,15 +21,15 @@ if ( empty( $_GET ) ) {
 	exit( 'Invalid request' );
 } else {
 	$api_url        = 'https://api.getresponse.com/v3';
-	$email      = ( isset( $_GET['email'] ) ) ? $_GET['email']: null;
-	$tag        = ( isset( $_GET['tag'] ) ) ? $_GET['tag']: null;
-	$nonce      = ( isset( $_GET['nonce'] ) ) ? $_GET['nonce']: null;
-	$update_contact   = ( isset( $_GET['update_contact'] ) ) ? $_GET['update_contact']: null;
-	$campaign_name   = ( isset( $_GET['campaign_name'] ) ) ? $_GET['campaign_name']: null;
-	$custom_field_code  = ( isset( $_GET['custom_field_code'] ) ) ? $_GET['custom_field_code']: null;
-	$affiliate_code  = ( isset( $_GET['affiliate_code'] ) ) ? $_GET['affiliate_code']: null;
-	$custom_field_link  = ( isset( $_GET['custom_field_link'] ) ) ? $_GET['custom_field_link'] ) : null;
-	$affiliate_link  = ( isset( $_GET['affiliate_link'] ) ) ? $_GET['affiliate_link']: null;
+	$email      = ( isset( $_GET['email'] ) ) ? $_GET['email'] : null;
+	$tag        = ( isset( $_GET['tag'] ) ) ? $_GET['tag'] : null;
+	$nonce      = ( isset( $_GET['nonce'] ) ) ? $_GET['nonce'] : null;
+	$update_contact   = ( isset( $_GET['update_contact'] ) ) ? $_GET['update_contact'] : null;
+	$campaign_name   = ( isset( $_GET['campaign_name'] ) ) ? $_GET['campaign_name'] : null;
+	$custom_field_code  = ( isset( $_GET['custom_field_code'] ) ) ? $_GET['custom_field_code'] : null;
+	$affiliate_code  = ( isset( $_GET['affiliate_code'] ) ) ? $_GET['affiliate_code'] : null;
+	$custom_field_link  = ( isset( $_GET['custom_field_link'] ) ) ? $_GET['custom_field_link'] : null;
+	$affiliate_link  = ( isset( $_GET['affiliate_link'] ) ) ? $_GET['affiliate_link'] : null;
 	$contact_id = null;
 
 	if ( $email ) :
