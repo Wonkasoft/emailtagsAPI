@@ -382,7 +382,7 @@ function get_the_list_of_tags( $tag ) {
 		curl_close( $ch );
 		$response = json_decode( $response );
 
-		return true;
+		return $response;
 	endif;
 }
 
@@ -390,8 +390,8 @@ function get_the_list_of_tags( $tag ) {
  * This functions gets a list of the contacts from passed query.
  *
  * @rest_endpoint GET /contacts
- * @param  [type] $email [description]
- * @return [type]        [description]
+ * @param  string $email contains the email of the contact passed in.
+ * @return object        return an object of a list of contacts.
  */
 function get_contact_list( $email ) {
 	$headerdata = array(
