@@ -41,67 +41,62 @@ $prep_data = json_decode( json_encode( $prep_data ) );
 
 $headerdata = array(
 	'X-Auth-Token: api-key ' . $GLOBALS['token'],
-	'Content-Type: application/json',
+	'Content-Type: application/x-www-form-urlencoded',
 );
 
-$tags = array();
-foreach ( $prep_data->tags as $value ) :
-	$tag_add = array(
-		'tagId' => $value,
-	);
-	array_push( $tags, $tag_add );
-endforeach;
-$custom_fields = array();
-foreach ( $prep_data->customFieldValues as $value ) :
-	$custom_add = array(
-		'customFieldId' => $value->id,
-		'name'          => $value->name,
-		'value'         => $value->value,
-	);
-	array_push( $custom_fields, $custom_add );
-endforeach;
+	  $post_data  = array(
+		  'query' => array(
+			  'email'          => $email,
+			  'name'           => null,
+			  'campaignId'     => null,
+			  'origin'         => null,
+			  'createdOn'      => array(
+				  'from'         => null,
+				  'to'           => null,
+			  ),
+			  'changedOn'      => array(
+				  'from'         => null,
+				  'to'           => null,
+			  ),
+		  ),
+		  'sort'             => array(
+			  'createdOn'      => null,
+			  'changedOn'      => null,
+			  'campaignId'     => null,
+		  ),
+		  'additionalFlags'  => null,
+		  'fields'           => null,
+		  'perPage'          => null,
+		  'page'             => null,
+	  );
 
-$payload  = array(
-	'name'              => 'Louis Lister',
-	'campaign'          => $prep_data->campaign_name,
-	'email'             => $prep_data->email,
-	'note'              => '',
-	'ipAddress'         => '',
-	'tags'              => $tags,
-	'customFieldValues' => $custom_fields,
-);
+	  $post_data  = json_decode( json_encode( $post_data ) );
+	  $post_data  = http_build_query( $post_data );
 
-$payload = json_encode( $payload );
-echo "<pre>\n";
-print_r( $payload );
-echo "</pre>\n";
+	  $ch         = curl_init();
+	  $url        = $api_url . '/contacts?' . $post_data;
+	  curl_setopt( $ch, CURLOPT_URL, $url );
+	  curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+	  curl_setopt( $ch, CURLOPT_HEADER, false );
+	  curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
+		curl_setopt( $ch, CURLPROTO_HTTPS, true );
 
-$ch         = curl_init();
-$url        = $api_url . '/contacts/' . $contact_id;
-curl_setopt( $ch, CURLOPT_URL, $url );
-curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
-curl_setopt( $ch, CURLOPT_HEADER, false );
-curl_setopt( $ch, CURLOPT_POST, true );
-curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
-curl_setopt( $ch, CURLPROTO_HTTPS, true );
+	  $response   = curl_exec( $ch );
 
-$response = curl_exec( $ch );
+	  if ( false === $response ) :
+			$error_obj = array(
+				'error' => curl_error( $ch ),
+				'status'    => 'failed',
+			);
+			curl_close( $ch );
+			$error_obj = json_decode( json_encode( $error_obj ) );
+			return $error_obj;
+	else :
+		curl_close( $ch );
+		$response = json_decode( $response );
 
-if ( false === $response ) :
-	curl_close( $ch );
-	$error_obj = array(
-		'error' => curl_error( $ch ),
-		'status'    => 'failed',
-	);
-	$error_obj = json_decode( $error_obj );
-	return $error_obj;
-else :
-	curl_close( $ch );
-	$response = json_decode( $response );
-
-	echo "<pre>\n";
-	print_r( $response );
-	echo "</pre>\n";
-	return $response;
-endif;
+		echo "<pre>\n";
+		print_r( $response );
+		echo "</pre>\n";
+		return $response;
+		endif;

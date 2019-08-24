@@ -37,7 +37,7 @@ if ( empty( $_GET ) ) {
 
 		if ( $contact_list ) :
 			foreach ( $contact_list as $current_contact ) {
-				if ( $email === $current_tag->email ) :
+				if ( $email === $current_contact->email ) :
 					$contact_obj = $current_contact;
 			   endif;
 			}
