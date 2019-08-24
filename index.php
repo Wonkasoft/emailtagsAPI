@@ -31,6 +31,7 @@ if ( empty( $_GET ) ) {
 	$custom_field_link  = ( isset( $_GET['custom_field_link'] ) ) ? $_GET['custom_field_link'] : null;
 	$affiliate_link  = ( isset( $_GET['affiliate_link'] ) ) ? $_GET['affiliate_link'] : null;
 	$contact_id = null;
+	$tag_id = null;
 
 	if ( $email ) :
 		$contact_list = get_contact_list( $email );
@@ -59,6 +60,7 @@ if ( empty( $_GET ) ) {
 						$tag_obj = $current_tag;
 				   endif;
 				}
+				$tag_id = $tag_obj->tagId;
 			endif;
 		endif;
 
@@ -120,7 +122,7 @@ if ( empty( $_GET ) ) {
 			update_contact_details( $prep_data, $contact_id, $useragent );
 		endif;
 
-		if ( upsert_the_tags_of_contact( $email, $tag_obj->tagId, $contact_id ) ) {
+		if ( upsert_the_tags_of_contact( $email, $tag_id, $contact_id ) ) {
 			echo '<div>You have added <h3 align="center">' . $tag . '</h3> to <h3 align="center">' . $email . '</h3> you may close your browser now</div>';
 		}
 	}
