@@ -123,7 +123,7 @@ if ( empty( $_GET ) ) {
 		endif;
 
 		if ( upsert_the_tags_of_contact( $email, $tag_id, $contact_id ) ) {
-			echo '<div align="center>You have added <h3 align="center">' . $tag . '</h3> to <h3 align="center">' . $email . '</h3> you may close your browser now</div>';
+			echo '<div align="center">You have added <h3 align="center">' . $tag . '</h3> to <h3 align="center">' . $email . '</h3> you may close your browser now</div>';
 		}
 	}
 }
