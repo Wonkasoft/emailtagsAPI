@@ -11,6 +11,7 @@
  */
 $config           = parse_ini_file( 'inc/config.ini' );
 $GLOBALS['token'] = $config['key'];
+$GLOBALS['api_url'] = 'https://api.getresponse.com/v3';
 if ( empty( $_GET ) ) {
 	header( 'Location: https://aperabags.com/' );
 	die();
@@ -20,7 +21,6 @@ if ( empty( $_GET ) ) {
 } elseif ( $_GET['nonce'] != 'ubHk73twHt6L' ) {
 	exit( 'Invalid request' );
 } else {
-	$api_url        = 'https://api.getresponse.com/v3';
 	$email      = ( isset( $_GET['email'] ) ) ? $_GET['email'] : null;
 	$tag        = ( isset( $_GET['tag'] ) ) ? $_GET['tag'] : null;
 	$nonce      = ( isset( $_GET['nonce'] ) ) ? $_GET['nonce'] : null;
@@ -174,7 +174,7 @@ function update_contact_details( $data, $contact_id, $useragent ) {
 	echo "</pre>\n";
 
 	$ch         = curl_init();
-	$url        = $api_url . '/contacts/' . $contact_id;
+	$url        = $GLOBALS['api_url'] . '/contacts/' . $contact_id;
 	curl_setopt( $ch, CURLOPT_URL, $url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
@@ -226,7 +226,7 @@ function upsert_the_tags_of_contact( $email, $tag_id, $contact_id ) {
 	$payload  = json_encode( $payload );
 
 	$ch         = curl_init();
-	$url        = $api_url . '/contacts/' . $contact_id . '/tags';
+	$url        = $GLOBALS['api_url'] . '/contacts/' . $contact_id . '/tags';
 	curl_setopt( $ch, CURLOPT_URL, $url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 	curl_setopt( $ch, CURLOPT_HEADER, false );
@@ -265,7 +265,7 @@ function add( $email ) {
 	);
 
 	$ch         = curl_init();
-	$url        = $api_url . '/contacts?query[email]=info@wonkasoft.com&query[origin]=api';
+	$url        = $GLOBALS['api_url'] . '/contacts?query[email]=info@wonkasoft.com&query[origin]=api';
 	curl_setopt( $ch, CURLOPT_URL, $url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
@@ -302,7 +302,7 @@ function delete( $email ) {
 	);
 
 	$ch         = curl_init();
-	$url        = $api_url . '/contacts?query[email]=info@wonkasoft.com&query[origin]=api';
+	$url        = $GLOBALS['api_url'] . '/contacts?query[email]=info@wonkasoft.com&query[origin]=api';
 	curl_setopt( $ch, CURLOPT_URL, $url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
@@ -361,7 +361,7 @@ function get_the_list_of_tags( $tag ) {
 	$post_data  = http_build_query( $post_data );
 
 	$ch         = curl_init();
-	$url        = $api_url . '/tags?' . $post_data;
+	$url        = $GLOBALS['api_url'] . '/tags?' . $post_data;
 	curl_setopt( $ch, CURLOPT_URL, $url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 	curl_setopt( $ch, CURLOPT_HEADER, false );
@@ -429,7 +429,7 @@ function get_contact_list( $email ) {
 	  $post_data  = http_build_query( $post_data );
 
 	  $ch         = curl_init();
-	  $url        = $api_url . '/contacts?' . $post_data;
+	  $url        = $GLOBALS['api_url'] . '/contacts?' . $post_data;
 	  curl_setopt( $ch, CURLOPT_URL, $url );
 	  curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 	  curl_setopt( $ch, CURLOPT_HEADER, false );
@@ -485,7 +485,7 @@ function get_a_list_of_campaigns( $campaign_name ) {
 		$post_data  = http_build_query( $post_data );
 
 		$ch         = curl_init();
-		$url        = $api_url . '/campaigns?' . $post_data;
+		$url        = $GLOBALS['api_url'] . '/campaigns?' . $post_data;
 		curl_setopt( $ch, CURLOPT_URL, $url );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $ch, CURLOPT_HEADER, false );
@@ -532,7 +532,7 @@ function get_a_list_of_custom_fields() {
 	$query  = http_build_query( $query );
 
 	$ch         = curl_init();
-	$url        = $api_url . '/custom-fields?' . $query;
+	$url        = $GLOBALS['api_url'] . '/custom-fields?' . $query;
 	curl_setopt( $ch, CURLOPT_URL, $url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 	curl_setopt( $ch, CURLOPT_HEADER, false );
@@ -588,7 +588,7 @@ function upsert_the_custom_fields_of_a_contact( $contact_id, $data ) {
 		$payload  = json_encode( $payload );
 
 		$ch         = curl_init();
-		$url        = $api_url . '/contacts/' . $contact_id . '/custom-fields';
+		$url        = $GLOBALS['api_url'] . '/contacts/' . $contact_id . '/custom-fields';
 		curl_setopt( $ch, CURLOPT_URL, $url );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $ch, CURLOPT_HEADER, false );

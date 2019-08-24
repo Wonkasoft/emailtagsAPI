@@ -95,8 +95,8 @@ $headerdata = array(
 		curl_close( $ch );
 		$response = json_decode( $response );
 
-		echo "<pre>\n";
-		print_r( $response );
-		echo "</pre>\n";
+			echo "<pre>\n";
+			print_r( $response );
+			echo "</pre>\n";
 		return $response;
 		endif;
