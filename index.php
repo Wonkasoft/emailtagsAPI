@@ -35,6 +35,9 @@ if ( empty( $_GET ) ) {
 	if ( $email ) :
 		$contact_list = get_contact_list( $email );
 
+		if ( condition ) :
+			your code
+		endif;
 		foreach ( $contact_list as $current_contact ) {
 			if ( $email === $current_tag->email ) :
 				$contact_obj = $current_contact;
@@ -179,12 +182,12 @@ function update_contact_details( $data, $contact_id, $useragent ) {
 	$response = curl_exec( $ch );
 
 	if ( false === $response ) :
-		curl_close( $ch );
 		$error_obj = array(
 			'error' => curl_error( $ch ),
 			'status'    => 'failed',
 		);
-		$error_obj = json_decode( $error_obj );
+		curl_close( $ch );
+		$error_obj = json_decode( json_encode( $error_obj ) );
 		return $error_obj;
 	else :
 		curl_close( $ch );
@@ -231,12 +234,12 @@ function upsert_the_tags_of_contact( $email, $tag_id, $contact_id ) {
 	$response = curl_exec( $ch );
 
 	if ( false === $response ) :
-		curl_close( $ch );
 		$error_obj = array(
 			'error' => curl_error( $ch ),
 			'status'    => 'failed',
 		);
-		$error_obj = json_decode( $error_obj );
+		curl_close( $ch );
+		$error_obj = json_decode( json_encode( $error_obj ) );
 		return $error_obj;
 else :
 	curl_close( $ch );
@@ -268,11 +271,20 @@ function add( $email ) {
 	curl_setopt( $ch, CURLPROTO_HTTPS, true );
 
 	$response = json_decode( json_encode( curl_exec( $ch ) ), false );
-	if ( $response === false ) {
-		echo 'cURL Error: ' . curl_error( $ch );
-	}
-	curl_close( $ch );
-	echo $response;
+	if ( false === $response ) :
+			$error_obj = array(
+				'error' => curl_error( $ch ),
+				'status'    => 'failed',
+			);
+			curl_close( $ch );
+			$error_obj = json_decode( json_encode( $error_obj ) );
+			return $error_obj;
+	else :
+		curl_close( $ch );
+		$response = json_decode( $response );
+
+		return true;
+	endif;
 }
 
 function delete( $email ) {
@@ -295,12 +307,21 @@ function delete( $email ) {
 	curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
 	curl_setopt( $ch, CURLPROTO_HTTPS, true );
 
-	$output = json_decode( json_encode( curl_exec( $ch ) ), false );
-	if ( $output === false ) {
-		echo 'cURL Error: ' . curl_error( $ch );
-	}
-	curl_close( $ch );
-	echo $output;
+	$response = json_decode( json_encode( curl_exec( $ch ) ), false );
+	if ( false === $response ) :
+			$error_obj = array(
+				'error' => curl_error( $ch ),
+				'status'    => 'failed',
+			);
+			curl_close( $ch );
+			$error_obj = json_decode( json_encode( $error_obj ) );
+			return $error_obj;
+	else :
+		curl_close( $ch );
+		$response = json_decode( $response );
+
+		return true;
+	endif;
 }
 
 /**
@@ -346,18 +367,18 @@ function get_the_list_of_tags( $tag ) {
 	$response = curl_exec( $ch );
 
 	if ( false === $response ) :
-		curl_close( $ch );
 		$error_obj = array(
 			'error' => curl_error( $ch ),
 			'status'    => 'failed',
 		);
-		$error_obj = json_decode( $error_obj );
+		curl_close( $ch );
+		$error_obj = json_decode( json_encode( $error_obj ) );
 		return $error_obj;
 	else :
 		curl_close( $ch );
 		$response = json_decode( $response );
 
-		return $response;
+		return true;
 	endif;
 }
 
@@ -414,19 +435,19 @@ function get_contact_list( $email ) {
 	  $response   = curl_exec( $ch );
 
 	  if ( false === $response ) :
-		  curl_close( $ch );
-		  $error_obj = array(
-			  'error' => curl_error( $ch ),
-			  'status'    => 'failed',
-		  );
-		  $error_obj = json_decode( $error_obj );
-		  return $error_obj;
-	  else :
-		  curl_close( $ch );
-		  $response = json_decode( $response );
+			$error_obj = array(
+				'error' => curl_error( $ch ),
+				'status'    => 'failed',
+			);
+			curl_close( $ch );
+			$error_obj = json_decode( json_encode( $error_obj ) );
+			return $error_obj;
+	else :
+		curl_close( $ch );
+		$response = json_decode( $response );
 
-		  return $response;
-	  endif;
+		return true;
+		endif;
 }
 
 /**
@@ -470,18 +491,18 @@ function get_a_list_of_campaigns( $campaign_name ) {
 		$response   = curl_exec( $ch );
 
 		if ( false === $response ) :
-			curl_close( $ch );
 			$error_obj = array(
 				'error' => curl_error( $ch ),
 				'status'    => 'failed',
 			);
-			$error_obj = json_decode( $error_obj );
+			curl_close( $ch );
+			$error_obj = json_decode( json_encode( $error_obj ) );
 			return $error_obj;
 		else :
 			curl_close( $ch );
 			$response = json_decode( $response );
 
-			return $response;
+			return true;
 		endif;
 }
 
@@ -517,19 +538,19 @@ function get_a_list_of_custom_fields() {
 	$response   = curl_exec( $ch );
 
 	if ( false === $response ) :
-		curl_close( $ch );
 		$error_obj = array(
 			'error' => curl_error( $ch ),
 			'status'    => 'failed',
 		);
-		$error_obj = json_decode( $error_obj );
+		curl_close( $ch );
+		$error_obj = json_decode( json_encode( $error_obj ) );
 		return $error_obj;
-  else :
-	  curl_close( $ch );
-	  $response = json_decode( $response );
+	else :
+		curl_close( $ch );
+		$response = json_decode( $response );
 
-	  return $response;
-  endif;
+		return true;
+	endif;
 }
 
 /**
@@ -575,17 +596,17 @@ function upsert_the_custom_fields_of_a_contact( $contact_id, $data ) {
 		$response = curl_exec( $ch );
 
 		if ( false === $response ) :
-			curl_close( $ch );
 			$error_obj = array(
 				'error' => curl_error( $ch ),
 				'status'    => 'failed',
 			);
-			$error_obj = json_decode( $error_obj );
+			curl_close( $ch );
+			$error_obj = json_decode( json_encode( $error_obj ) );
 			return $error_obj;
-	else :
-		curl_close( $ch );
-		$response = json_decode( $response );
+		else :
+			curl_close( $ch );
+			$response = json_decode( $response );
 
-		return true;
-	endif;
+			return true;
+		endif;
 }
