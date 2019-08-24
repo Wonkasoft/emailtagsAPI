@@ -450,7 +450,7 @@ function get_contact_list( $email ) {
 		curl_close( $ch );
 		$response = json_decode( $response );
 
-		return true;
+		return $response;
 		endif;
 }
 
