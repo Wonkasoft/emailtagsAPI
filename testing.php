@@ -1,100 +1,150 @@
 <?php
 
-$config           = parse_ini_file( 'inc/config.ini' );
-$GLOBALS['token'] = $config['key'];
+// $config           = parse_ini_file( 'inc/config.ini' );
+// $GLOBALS['token'] = $config['key'];
 
-$api_url        = 'https://api.getresponse.com/v3';
-$tag_name = 'approved';
-$tag_id = 'Pa9u';
-$email = 'louisl04@hotmail.com';
-$contact_id = 'SHO5QT';
-$campaign_name = 'zip';
-$affiliate_code = 'fake';
-$affiliate_link = 'https://wonkasoft.com';
+// $api_url        = 'https://api.getresponse.com/v3';
+// $tag_name = 'approved';
+// $tag_id = 'Pa9u';
+// $email = 'louisl04@hotmail.com';
+// $contact_id = 'SHO5QT';
+// $campaign_name = 'zip';
+// $affiliate_code = 'fake';
+// $affiliate_link = 'https://wonkasoft.com';
 
-$prep_data = array(
-	'email'             => $email,
-	'tags'            => array(
-		$tag_id,
-	),
-	'campaign_name'     => array(
-		'campaignId'    => $campaign_name,
-	),
-	'customFieldValues' => array(
-		'affiliate_code'    => $affiliate_code,
-		'affiliate_link'    => $affiliate_link,
-	),
-);
-$prep_data = json_decode( json_encode( $prep_data ) );
+// $prep_data = array(
+// 	'email'             => $email,
+// 	'tags'            => array(
+// 		$tag_id,
+// 	),
+// 	'campaign_name'     => array(
+// 		'campaignId'    => $campaign_name,
+// 	),
+// 	'customFieldValues' => array(
+// 		'affiliate_code'    => $affiliate_code,
+// 		'affiliate_link'    => $affiliate_link,
+// 	),
+// );
+// $prep_data = json_decode( json_encode( $prep_data ) );
 
-$headerdata = array(
-	'X-Auth-Token: api-key ' . $GLOBALS['token'],
-	'Content-Type: application/json',
-);
+// $headerdata = array(
+// 	'X-Auth-Token: api-key ' . $GLOBALS['token'],
+// 	'Content-Type: application/json',
+// );
 
-$tags = array();
-foreach ( $prep_data->tags as $value ) :
-	$tag_add = array(
-		'tagId' => $value,
-	);
-	$tag_add = json_decode( json_encode( $tag_add ) );
-	array_push( $tags, $tag_add );
-endforeach;
-  $custom_fields = array();
-foreach ( $prep_data->customFieldValues as $key => $value ) :
-	$custom_add = array(
-		'customFieldId' => $key,
-		'value'         => array(
-			$value,
-		),
-	);
-	$custom_add = json_decode( json_encode( $custom_add ) );
-	array_push( $custom_fields, $custom_add );
-  endforeach;
+// $tags = array();
+// foreach ( $prep_data->tags as $value ) :
+// 	$tag_add = array(
+// 		'tagId' => $value,
+// 	);
+// 	// $tag_add = json_decode( json_encode( $tag_add ) );
+// 	array_push( $tags, $tag_add );
+// endforeach;
+//   $custom_fields = array();
+// foreach ( $prep_data->customFieldValues as $key => $value ) :
+// 	$custom_add = array(
+//     'customFieldId' => '',
+// 		'name' => $key,
+// 		'value'         => array(
+// 			$value,
+// 		),
+// 	);
+// 	// $custom_add = json_decode( json_encode( $custom_add ) );
+// 	array_push( $custom_fields, $custom_add );
+//   endforeach;
 
-  $payload  = array(
-	  'name'              => null,
-	  'campaign'          => $prep_data->campaign_name,
-	  'email'             => $prep_data->email,
-	  'dayOfCycle'        => null,
-	  'note'              => '',
-	  'scoring'           => null,
-	  'ipAddress'         => '',
-	  'tags'              => $tags,
-	  'customFieldValues' => $custom_fields,
+//   $payload  = array(
+// 	  'name'              => null,
+// 	  'campaign'          => $prep_data->campaign_name,
+// 	  'email'             => $prep_data->email,
+// 	  'dayOfCycle'        => 0,
+// 	  'note'              => '',
+// 	  'scoring'           => null,
+// 	  'ipAddress'         => '',
+// 	  'tags'              => $tags,
+// 	  'customFieldValues' => $custom_fields,
+//   );
+
+//  //  echo "<pre>\n";
+// 	// print_r( $payload );
+// 	// echo "</pre>\n";
+//   $payload = json_encode( $payload );
+
+//   $ch         = curl_init();
+//   $url        = $api_url . '/contacts/' . $contact_id;
+//   curl_setopt( $ch, CURLOPT_URL, $url );
+//   curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+//   curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
+//   curl_setopt( $ch, CURLOPT_HEADER, false );
+//   curl_setopt( $ch, CURLOPT_POST, true );
+//   curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+//   curl_setopt( $ch, CURLPROTO_HTTPS, true );
+
+//   $response = curl_exec( $ch );
+
+//   if ( false === $response ) :
+// 	  curl_close( $ch );
+// 	  $error_obj = array(
+// 		  'error' => curl_error( $ch ),
+// 		  'status'    => 'failed',
+// 	  );
+// 	  $error_obj = json_decode( $error_obj );
+// 	  return $error_obj;
+//   else :
+// 	  curl_close( $ch );
+// 	  $response = json_decode( $response );
+
+// 	  echo "<pre>\n";
+// 	  print_r( $response );
+// 	  echo "</pre>\n";
+// 	  return $response;
+//   endif;
+
+
+
+  $headerdata = array(
+    'X-Auth-Token: api-key ' . $GLOBALS['token'],
+    'Content-Type: application/x-www-form-urlencoded',
   );
 
-  $payload = json_encode( $payload );
-  echo "<pre>\n";
-	print_r( $payload );
-	echo "</pre>\n";
+    $post_data  = array(
+      'query' => array(
+        'name'           => $campaign_name,
+        'isDefault'     => null
+      ),
+      'sort'             => array(
+        'name'           => null,
+        'createdOn'      => null,
+      ),
+      'fields'           => null,
+      'perPage'          => null,
+      'page'             => null,
+    );
 
-  $ch         = curl_init();
-  $url        = $api_url . '/contacts/' . $contact_id;
-  curl_setopt( $ch, CURLOPT_URL, $url );
-  curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-  curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
-  curl_setopt( $ch, CURLOPT_HEADER, false );
-  curl_setopt( $ch, CURLOPT_POST, true );
-  curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
-  curl_setopt( $ch, CURLPROTO_HTTPS, true );
+    $post_data  = json_decode( json_encode( $post_data ) );
+    $post_data  = http_build_query( $post_data );
 
-  $response = curl_exec( $ch );
+    $ch         = curl_init();
+    $url        = $api_url . '/contacts?' . $post_data;
+    curl_setopt( $ch, CURLOPT_URL, $url );
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+    curl_setopt( $ch, CURLOPT_HEADER, false );
+    curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
+    curl_setopt( $ch, CURLPROTO_HTTPS, true );
 
-  if ( false === $response ) :
-	  curl_close( $ch );
-	  $error_obj = array(
-		  'error' => curl_error( $ch ),
-		  'status'    => 'failed',
-	  );
-	  $error_obj = json_decode( $error_obj );
-	  return $error_obj;
-  else :
-	  curl_close( $ch );
-	  $response = json_decode( $response );
+    $response   = curl_exec( $ch );
 
-	  echo "<pre>\n";
-	  print_r( $response );
-	  echo "</pre>\n";
-	  return $response;
-  endif;
+    if ( false === $response ) :
+      curl_close( $ch );
+      $error_obj = array(
+        'error' => curl_error( $ch ),
+        'status'    => 'failed',
+      );
+      $error_obj = json_decode( $error_obj );
+      return $error_obj;
+    else :
+      curl_close( $ch );
+      $response = json_decode( $response );
+
+      return $response;
+    endif;
