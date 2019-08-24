@@ -24,9 +24,11 @@ if ( empty( $_GET ) ) {
 	$email      = ( isset( $_GET['email'] ) ) ? unslash( $_GET['email'] ) : null;
 	$tag        = ( isset( $_GET['tag'] ) ) ? unslash( $_GET['tag'] ) : null;
 	$nonce      = ( isset( $_GET['nonce'] ) ) ? unslash( $_GET['nonce'] ) : null;
-	$useragent  = ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) ? unslash( $_SERVER['HTTP_USER_AGENT'] ) : null;
+	$update_contact   = ( isset( $_GET['update_contact'] ) ) ? unslash( $_GET['update_contact'] ) : null;
 	$campaign_name   = ( isset( $_GET['campaign_name'] ) ) ? unslash( $_GET['campaign_name'] ) : null;
+	$custom_field_code  = ( isset( $_GET['custom_field_code'] ) ) ? unslash( $_GET['custom_field_code'] ) : null;
 	$affiliate_code  = ( isset( $_GET['affiliate_code'] ) ) ? unslash( $_GET['affiliate_code'] ) : null;
+	$custom_field_link  = ( isset( $_GET['custom_field_link'] ) ) ? unslash( $_GET['custom_field_link'] ) : null;
 	$affiliate_link  = ( isset( $_GET['affiliate_link'] ) ) ? unslash( $_GET['affiliate_link'] ) : null;
 	$contact_id = null;
 
@@ -40,6 +42,7 @@ if ( empty( $_GET ) ) {
 		}
 
 		$contact_id = $contact_obj->contactId;
+		$contact_name = $contact_obj->name;
 	endif;
 
 	if ( null === $contact_id ) {
@@ -64,13 +67,47 @@ if ( empty( $_GET ) ) {
 			endforeach;
 		endif;
 
-		if ( $campaign_name && $affiliate_code && $affiliate_link ) :
+		if ( $custom_field_code ) :
+			$prep_fields = array(
+				'customFieldValues' => array(
+					array(
+						'id'      => $af_code_id,
+						'name'    => $custom_field_code,
+						'value'    => array( $affiliate_code ),
+					),
+					array(
+						'id'      => $af_link_id,
+						'name'    => $custom_field_link,
+						'value'    => array( $affiliate_link ),
+					),
+				),
+			);
+			$prep_fields = json_decode( json_encode( $prep_fields ) );
+			upsert_the_custom_fields_of_a_contact( $contact_id, $prep_fields );
+		endif;
+
+		if ( $update_contact && $contact_name && $campaign_name && $affiliate_code && $affiliate_link ) :
 			$prep_data = array(
+				'contact_name'      => $contact_name,
 				'email'             => $email,
-				'tag_id'            => $tag_obj->tagId,
-				'campaign_id'       => $campaign_obj->campaignId,
-				'affiliate_code'    => $affiliate_code,
-				'affiliate_link'    => $affiliate_link,
+				'tags'            => array(
+					$tag_id,
+				),
+				'campaign_name'     => array(
+					'campaignId'    => $campaign_obj->campaignId,
+				),
+				'customFieldValues' => array(
+					array(
+						'id'      => $af_code_id,
+						'name'    => $custom_field_code,
+						'value'    => array( $affiliate_code ),
+					),
+					array(
+						'id'      => $af_link_id,
+						'name'    => $custom_field_link,
+						'value'    => array( $affiliate_link ),
+					),
+				),
 			);
 			$prep_data = json_decode( json_encode( $prep_data ) );
 			update_contact_details( $prep_data, $contact_id, $useragent );
@@ -94,44 +131,45 @@ if ( empty( $_GET ) ) {
  */
 function update_contact_details( $data, $contact_id, $useragent ) {
 	$headerdata = array(
-		'User-Agent:' . $useragent,
 		'X-Auth-Token: api-key ' . $GLOBALS['token'],
-		'Referer: localhost',
 		'Content-Type: application/json',
 	);
 
+	$tags = array();
+	foreach ( $data->tags as $cur_tag ) :
+		$tag_add = array(
+			'tagId' => $cur_tag,
+		);
+		array_push( $tags, $tag_add );
+	endforeach;
+	$custom_fields = array();
+	$custom_field_values = $data->customFieldValues;
+	foreach ( $custom_field_values as $cur_field ) :
+		$custom_add = array(
+			'customFieldId' => $cur_field->id,
+			'name'          => $cur_field->name,
+			'value'         => $cur_field->value,
+		);
+		array_push( $custom_fields, $custom_add );
+	endforeach;
+
 	$payload  = array(
-		'name'              => null,
+		'name'              => $data->contact_name,
 		'campaign'          => $data->campaign_name,
 		'email'             => $data->email,
-		'dayOfCycle'        => null,
-		'note'              => null,
-		'scoring'           => null,
-		'ipAddress'         => null,
-		'tags'              => array(
-			array(
-				'tadId'         => $data->tag_id,
-			),
-		),
-		'customFieldValues' => array(
-			array(
-				'customFieldId' => key( $data->affiliate_code ),
-				'value'         => $data->affiliate_code,
-			),
-			array(
-				'customFieldId' => key( $data->affiliate_link ),
-				'value'         => $data->affiliate_link,
-			),
-		),
+		'tags'              => $tags,
+		'customFieldValues' => $custom_fields,
 	);
 
 	$payload = json_encode( $payload );
+	echo "<pre>\n";
+	print_r( $payload );
+	echo "</pre>\n";
 
 	$ch         = curl_init();
 	$url        = $api_url . '/contacts/' . $contact_id;
 	curl_setopt( $ch, CURLOPT_URL, $url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-	curl_setopt( $ch, CURLOPT_USERAGENT, $useragent );
 	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
 	curl_setopt( $ch, CURLOPT_HEADER, false );
 	curl_setopt( $ch, CURLOPT_POST, true );
@@ -151,6 +189,7 @@ function update_contact_details( $data, $contact_id, $useragent ) {
 	else :
 		curl_close( $ch );
 		$response = json_decode( $response );
+
 		return $response;
 	endif;
 }
@@ -444,4 +483,109 @@ function get_a_list_of_campaigns( $campaign_name ) {
 
 			return $response;
 		endif;
+}
+
+function get_a_list_of_custom_fields() {
+	$headerdata = array(
+		'X-Auth-Token: api-key ' . $GLOBALS['token'],
+		'Content-Type: application/x-www-form-urlencoded',
+	);
+
+	$query  = array(
+		'query' => array(
+			'name'           => null,
+		),
+		'sort'             => array(
+			'name'          => null,
+		),
+		'fields'           => null,
+		'perPage'          => null,
+		'page'             => null,
+	);
+
+	$query  = json_decode( json_encode( $query ) );
+	$query  = http_build_query( $query );
+
+	$ch         = curl_init();
+	$url        = $api_url . '/custom-fields?' . $query;
+	curl_setopt( $ch, CURLOPT_URL, $url );
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+	curl_setopt( $ch, CURLOPT_HEADER, false );
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
+	curl_setopt( $ch, CURLPROTO_HTTPS, true );
+
+	$response   = curl_exec( $ch );
+
+	if ( false === $response ) :
+		curl_close( $ch );
+		$error_obj = array(
+			'error' => curl_error( $ch ),
+			'status'    => 'failed',
+		);
+		$error_obj = json_decode( $error_obj );
+		return $error_obj;
+  else :
+	  curl_close( $ch );
+	  $response = json_decode( $response );
+
+	  return $response;
+  endif;
+}
+
+/**
+ * Upsert (add or update) the custom fields of a contact. This method doesn't remove (unassign) custom fields.
+ *
+ * @rest_endpoint POST /contacts/{contactId}/custom-fields
+ * @param  string $contact_id contains the contacts id.
+ * @return boolean             returns errors or true on success.
+ */
+function upsert_the_custom_fields_of_a_contact( $contact_id, $data ) {
+		$headerdata = array(
+			'X-Auth-Token: api-key ' . $GLOBALS['token'],
+			'Content-Type: application/json',
+		);
+
+		$custom_fields = array();
+		$custom_field_values = $data->customFieldValues;
+		foreach ( $custom_field_values as $cur_field ) :
+			$custom_add = array(
+				'customFieldId' => $cur_field->id,
+				'name'          => $cur_field->name,
+				'value'         => $cur_field->value,
+			);
+			array_push( $custom_fields, $custom_add );
+		endforeach;
+
+		$payload    = array(
+			'customFieldValues'  => $custom_fields,
+		);
+
+		$payload  = json_encode( $payload );
+
+		$ch         = curl_init();
+		$url        = $api_url . '/contacts/' . $contact_id . '/custom-fields';
+		curl_setopt( $ch, CURLOPT_URL, $url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_HEADER, false );
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerdata );
+		curl_setopt( $ch, CURLOPT_POST, true );
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+		curl_setopt( $ch, CURLPROTO_HTTPS, true );
+
+		$response = curl_exec( $ch );
+
+		if ( false === $response ) :
+			curl_close( $ch );
+			$error_obj = array(
+				'error' => curl_error( $ch ),
+				'status'    => 'failed',
+			);
+			$error_obj = json_decode( $error_obj );
+			return $error_obj;
+	else :
+		curl_close( $ch );
+		$response = json_decode( $response );
+
+		return true;
+	endif;
 }
