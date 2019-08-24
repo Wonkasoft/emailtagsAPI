@@ -35,17 +35,16 @@ if ( empty( $_GET ) ) {
 	if ( $email ) :
 		$contact_list = get_contact_list( $email );
 
-		if ( condition ) :
-			your code
-		endif;
-		foreach ( $contact_list as $current_contact ) {
-			if ( $email === $current_tag->email ) :
-				$contact_obj = $current_contact;
-		   endif;
-		}
+		if ( $contact_list ) :
+			foreach ( $contact_list as $current_contact ) {
+				if ( $email === $current_tag->email ) :
+					$contact_obj = $current_contact;
+			   endif;
+			}
 
-		$contact_id = $contact_obj->contactId;
-		$contact_name = $contact_obj->name;
+			$contact_id = $contact_obj->contactId;
+			$contact_name = $contact_obj->name;
+		endif;
 	endif;
 
 	if ( null === $contact_id ) {
@@ -54,20 +53,25 @@ if ( empty( $_GET ) ) {
 		if ( $tag ) :
 			$tag_list = get_the_list_of_tags( $tag );
 
-			foreach ( $tag_list as $current_tag ) {
-				if ( $tag === $current_tag->name ) :
-					$tag_obj = $current_tag;
-			   endif;
-			}
+			if ( $tag_list ) :
+				foreach ( $tag_list as $current_tag ) {
+					if ( $tag === $current_tag->name ) :
+						$tag_obj = $current_tag;
+				   endif;
+				}
+			endif;
 		endif;
 
 		if ( $campaign_name ) :
 			$campaign_list = get_a_list_of_campaigns( $campaign_name );
-			foreach ( $campaign_list as $campaign ) :
-				if ( $campaign_name === $campaign->name ) :
-					$campaign_obj = $campaign;
-				endif;
-			endforeach;
+
+			if ( $campaign_list ) :
+				foreach ( $campaign_list as $campaign ) :
+					if ( $campaign_name === $campaign->name ) :
+						$campaign_obj = $campaign;
+					endif;
+				endforeach;
+			endif;
 		endif;
 
 		if ( $custom_field_code ) :
